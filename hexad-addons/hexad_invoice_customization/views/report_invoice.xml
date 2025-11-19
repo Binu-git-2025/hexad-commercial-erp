@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="partner_address_without_state_country">
+        <t t-if="partner">
+            <address class="mb-0">
+                <div t-if="partner.name">
+                    <t t-esc="partner.name"/>
+                </div>
+                <div t-if="partner.street">
+                    <t t-esc="partner.street"/>
+                </div>
+                <div t-if="partner.street2">
+                    <t t-esc="partner.street2"/>
+                </div>
+                <div t-if="partner.zip or partner.city">
+                    <span t-if="partner.city">
+                        <t t-esc="partner.city"/>
+                    </span>
+                    <span t-if="partner.zip">
+                        <t t-if="partner.city"> - </t>
+                        <t t-esc="partner.zip"/>
+                    </span>
+                </div>
+            </address>
+        </t>
+    </template>
+
+    <template id="report_invoice_document_inherit_hexad" inherit_id="account.report_invoice_document">
+        <xpath expr="//t[@t-set='forced_vat']" position="after">
+            <div class="text-center mb-3" style="margin-top: 20px;">
+                <h2 style="font-weight: bold; margin: 0;">Commercial Invoice</h2>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@name='shipping_address_block']/div[@t-field]" position="replace">
+            <div>
+                <t t-call="hexad_invoice_customization.partner_address_without_state_country">
+                    <t t-set="partner" t-value="o.partner_shipping_id"/>
+                </t>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@name='address_not_same_as_shipping']/t[@t-set='address']/address" position="replace">
+            <t t-call="hexad_invoice_customization.partner_address_without_state_country">
+                <t t-set="partner" t-value="o.partner_id"/>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[@name='address_same_as_shipping']/t[@t-set='address']/address" position="replace">
+            <t t-call="hexad_invoice_customization.partner_address_without_state_country">
+                <t t-set="partner" t-value="o.partner_id"/>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[@name='no_shipping']/t[@t-set='address']/address" position="replace">
+            <t t-call="hexad_invoice_customization.partner_address_without_state_country">
+                <t t-set="partner" t-value="o.partner_id"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="l10n_in_report_invoice_document_inherit_hexad" inherit_id="l10n_in.l10n_in_report_invoice_document_inherit">
+        <xpath expr="//t[@name='invoice_title']" position="replace">
+            <t name="invoice_title">
+                <span>Invoice No#</span>
+            </t>
+        </xpath>
+
+        <!-- Hide HSN/SAC column header - target the t element that contains th with text HSN/SAC -->
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr/t[th[text()='HSN/SAC']]" position="replace"/>
+
+        <!-- Hide HSN/SAC column data - target td that contains span with l10n_in_hsn_code -->
+        <xpath expr="//t[@name='account_invoice_line_accountable']/td[span[@t-if='line.l10n_in_hsn_code']]" position="replace"/>
+
+        <!-- Hide HSN Summary table -->
+        <xpath expr="//div[@name='l10n_in_hsn_summary']" position="replace"/>
+
+        <!-- Remove Place of supply from address blocks -->
+        <xpath expr="//div[@name='address_not_same_as_shipping']//t[@t-call='l10n_in.place_of_supply']" position="replace"/>
+        <xpath expr="//div[@name='address_same_as_shipping']//t[@t-call='l10n_in.place_of_supply']" position="replace"/>
+        <xpath expr="//div[@name='no_shipping']//t[@t-call='l10n_in.place_of_supply']" position="replace"/>
+    </template>
+</odoo>

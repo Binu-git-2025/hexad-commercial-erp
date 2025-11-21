@@ -1,0 +1,17 @@
+<odoo>
+    <record id="view_partner_form_tds" model="ir.ui.view">
+        <field name="name">res.partner.tds.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='o_address_format']/ancestor::group[2]" position="after">
+                <group>
+                    <group string="TDS Information">
+                        <field name="tds_applicable"/>
+                        <field name="tds_percent" invisible="not tds_applicable"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

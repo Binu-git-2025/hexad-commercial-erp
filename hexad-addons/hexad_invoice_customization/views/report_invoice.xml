@@ -25,12 +25,39 @@
         </t>
     </template>
 
-    <template id="report_invoice_document_inherit_hexad" inherit_id="account.report_invoice_document">
-        <xpath expr="//t[@t-set='forced_vat']" position="after">
-            <div class="text-center mb-3" style="margin-top: 20px;">
-                <h2 style="font-weight: bold; margin: 0;">Commercial Invoice</h2>
+    <!-- Customize external_layout_wave: Remove logo, add report name in header, customize footer -->
+    <template id="external_layout_wave_custom_inherit" inherit_id="web.external_layout_wave">
+        <!-- Remove logo from header -->
+        <xpath expr="//img[@t-if='company.logo']" position="replace"/>
+        
+        <!-- Add padding to parent div to push content down -->
+        <xpath expr="//div[@class='d-flex justify-content-between']/div[1]" position="attributes">
+            <attribute name="style">padding-top: 45px;</attribute>
+        </xpath>
+        
+        <!-- Replace company tagline with report name based on model, or add it if it doesn't exist -->
+        <xpath expr="//div[@class='o_company_tagline fw-bold']" position="replace">
+            <div class="o_company_tagline fw-bold" style="font-size: 28px;">
+                <t t-if="o and o._name == 'account.move'">Commercial Invoice</t>
+                <!-- <t t-else="" t-if="company.report_header" t-field="company.report_header"/> -->
             </div>
         </xpath>
+        
+        <!-- Add report name if company.report_header doesn't exist but we have account.move -->
+        <!-- <xpath expr="//div[@class='d-flex justify-content-between']/div[1]" position="inside">
+            <div t-if="o and o._name == 'account.move' and not company.report_header" class="o_company_tagline fw-bold">Commercial Invoice</div>
+        </xpath> -->
+        
+        <!-- Replace document name span -->
+        <xpath expr="//div[@t-field='company.report_footer']" position="replace"/>
+        
+        <!-- Replace page number span with Thank You -->
+        <xpath expr="//span[span[@class='page'] and span[@class='topage']]" position="replace">
+            <span t-if="report_type == 'pdf'" class="text-muted fw-bold">Thank You</span>
+        </xpath>
+    </template>
+
+    <template id="report_invoice_document_inherit_hexad" inherit_id="account.report_invoice_document">
 
         <xpath expr="//div[@name='shipping_address_block']/div[@t-field]" position="replace">
             <div>
@@ -57,6 +84,12 @@
                 <t t-set="partner" t-value="o.partner_id"/>
             </t>
         </xpath>
+
+        <!-- Replace Source field -->
+        <xpath expr="//div[@name='origin']" position="replace"/>
+
+        <!-- Replace Reference field -->
+        <xpath expr="//div[@name='reference']" position="replace"/>
     </template>
 
     <template id="l10n_in_report_invoice_document_inherit_hexad" inherit_id="l10n_in.l10n_in_report_invoice_document_inherit">

@@ -9,9 +9,11 @@
     """,
     'author': 'Hexad',
     'website': '',
-    'depends': ['account', 'l10n_in'],
+    'depends': ['account', 'l10n_in', 'sale', 'web'],
     'data': [
-        # 'data/mail_template_data.xml',
+        'data/mail_template_data.xml',
+        'views/res_partner_view.xml',
+        'views/sale_order_view.xml',
         'views/report_invoice.xml',
     ],
     'installable': True,
